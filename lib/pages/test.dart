@@ -239,7 +239,7 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
 
 
                                      )),
-                                 child: IconButton(icon: Icon(Icons.remove, color: Colors.white,),onPressed: ()=>setState((){_foodCount>0 ? _foodCount--: _foodCount = 0; _itemCount -= _foodCount;}))
+                                 child: IconButton(icon: Icon(Icons.remove, color: Colors.white,),onPressed: ()=>setState((){_foodCount>0 ? _foodCount--: _foodCount = 0; _itemCount = _foodCount;}))
                              ),
                              Container(
                                width: width/5,
@@ -264,7 +264,7 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
                                      bottomRight: const Radius.circular(40.0),
 
                                    )),
-                               child:  IconButton(icon: Icon(Icons.add, color: Colors.white,),onPressed: ()=>setState((){_foodCount++; _itemCount += _foodCount;})),
+                               child:  IconButton(icon: Icon(Icons.add, color: Colors.white,),onPressed: ()=>setState((){_foodCount++; _itemCount = _foodCount;})),
                              ),
                            ],
                          ),
@@ -283,12 +283,6 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
                  ],
                ),
              );
-//               Column(
-//               children: <Widget>[
-//                   Text('${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_name']}'),
-//                  // Text('Age: ${employees[index]['restaurant_id']}'),
-//               ],
-//             );
            },
 
          );
@@ -302,123 +296,6 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
   }
 
 }
-
-
-
-//ListView.builder(
-//itemCount: 2,
-////data == null ? 0 : data.length,
-//itemBuilder: (BuildContext context, int index){
-//return Card(
-//child: Column(
-//children: <Widget>[
-//Container(
-//child:
-////Text(data[index]['restaurant_name'],style: TextStyle(fontSize: 20),),
-//Column(
-//children: <Widget>[
-//Row(
-//mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//children: <Widget>[
-//Column(
-//crossAxisAlignment: CrossAxisAlignment.start,
-//mainAxisSize: MainAxisSize.max,
-//mainAxisAlignment: MainAxisAlignment.start,
-//children: <Widget>[
-//Container(
-//width: width/1.4,
-//child: Text("ikuygyhg"),
-//
-//),
-//Row(
-//mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//children: <Widget>[
-//Container(child: Text("SAR 7.25")),
-//Padding(
-//padding: EdgeInsets.only(top: 8,left: width/2.6),
-//child: Container(child: Text('15 calories')),
-//),
-//],
-//),
-//
-//Padding(
-//padding: const EdgeInsets.only(top: 10,bottom: 10),
-//child: Container(
-//width: width/1.4,
-//child: Text("jhjhfkjhf jhjhjh ljyhgjglkjhg gjhgjhg kjh jksdhfkgjh dkf  dkjfhgkjh dfjghkdjfhg dfjhgkjdfhg",style: TextStyle(color: Colors.black38), textAlign: TextAlign.left)),
-//)
-//
-//],
-//),
-//Container(
-//child: Image.network(
-//'http://restaurants.unicomerp.net//images/Restaurant/1010000001/Item/Items/100000001.jpg',
-//scale: 11,
-//),
-//)
-//],
-//),
-//
-//Row(
-//children: <Widget>[
-//Container(
-//width: width/10,
-//height: width/10,
-//decoration: new BoxDecoration(
-//color: Colors.green,
-//borderRadius: new BorderRadius.only(
-//topLeft: const Radius.circular(40.0),
-//
-//bottomLeft: const Radius.circular(40.0),
-//
-//
-//)),
-//child: IconButton(icon: Icon(Icons.remove, color: Colors.white,),onPressed: ()=>setState((){_foodCount>0 ? _foodCount--: _foodCount = 0; _itemCount -= _foodCount;}))
-//),
-//Container(
-//width: width/5,
-//height: width/10,
-//decoration: new BoxDecoration(
-//color: Colors.green,
-//),
-//child: Center(
-//child: Text(_foodCount.toString(),style: TextStyle(color: Colors.white, fontSize: width/25),),
-//
-//),
-//),
-//Container(
-//width: width/10,
-//height: width/10,
-//decoration: new BoxDecoration(
-//color: Colors.green,
-//borderRadius: new BorderRadius.only(
-//
-//topRight: const Radius.circular(40.0),
-//
-//bottomRight: const Radius.circular(40.0),
-//
-//)),
-//child:  IconButton(icon: Icon(Icons.add, color: Colors.white,),onPressed: ()=>setState((){_foodCount++; _itemCount = _foodCount;})),
-//),
-//],
-//),
-//Padding(
-//padding: EdgeInsets.only(top: height/70),
-//child: Container(
-//alignment: Alignment(-1.0, -1.0),
-//child: Text('Customization Available',style: TextStyle(color: Colors.red),)
-//),
-//),
-//
-//],
-//),
-//padding: const EdgeInsets.all(20),
-//)
-//],
-//),
-//);
-//});
-
 
 
 
