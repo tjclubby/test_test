@@ -6,6 +6,22 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 
 int _itemCount = 0;
+int _foodCount = 0;
+
+
+class URLS {
+  static const String BASE_URL = 'http://www.mocky.io/v2/5dfccffc310000efc8d2c1ad';
+}
+class ApiService {
+  static Future<List<dynamic>> getCafe() async {
+    final response = await http.get('${URLS.BASE_URL}');
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return null;
+    }
+  }
+}
 
 class TestPage extends StatefulWidget {
   @override
@@ -13,14 +29,11 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixin{
-  final String url  = 'https://www.mocky.io/v2/5dfccffc310000efc8d2c1ad';
-  List data;
   TabController _tabController;
 
   @override
   void initState(){
     super.initState();
-    this.getData();
     _tabController = new TabController(vsync: this, length: 5);
   }
 
@@ -30,20 +43,9 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
     super.dispose();
   }
 
-  Future<String> getData()async{
-    var res = await http.get(Uri.encodeFull(url),headers:{"Accept":"application/json"});
-    print(res.body);
-    setState(() {
-      var resBody = json.decode(res.body);
-      data = resBody['results'];
-    });
-    return "Sucess";
-  }
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-    var width = screenSize.width;
-    var height = screenSize.height;
+
     return new WillPopScope(
         onWillPop: _onWillPop,
 
@@ -129,12 +131,7 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
             ),
 
           ),
-          body: ListView.builder(
-                  itemCount: 2,
-                  //data == null ? 0 : data.length,
-                  itemBuilder: (BuildContext context, int index){
-                    return CafeListView();
-                  }),
+          body: dataFetch()
         )
     );
   }
@@ -157,130 +154,270 @@ class _TestPageState extends State<TestPage>  with SingleTickerProviderStateMixi
       ),
     ) ?? false;
   }
-}
 
-class CafeListView extends StatefulWidget {
-  @override
-  _CafeListViewState createState() => _CafeListViewState();
-}
-
-class _CafeListViewState extends State<CafeListView> {
-  int _foodCount = 0;
-  @override
-  Widget build(BuildContext context) {
+  dataFetch(){
     var screenSize = MediaQuery.of(context).size;
     var width = screenSize.width;
     var height = screenSize.height;
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Container(
-            child:
-            //Text(data[index]['restaurant_name'],style: TextStyle(fontSize: 20),),
-            Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: width/1.4,
-                          child: Text("Spinatch Salad"),
+   return FutureBuilder(
+     future: ApiService.getCafe(),
+     builder: (context, snapshot) {
+       final cafes = snapshot.data;
+       debugPrint('$cafes');
+       if (snapshot.connectionState == ConnectionState.done) {
+         return ListView.builder(
+           itemCount: cafes.length,
+           itemBuilder: (context, index) {
+             return Card(
+               child: Column(
+                 children: <Widget>[
+                   Container(
+                     child:
+                     Column(
+                       children: <Widget>[
+                         Row(
+                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                           children: <Widget>[
+                             Column(
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               mainAxisSize: MainAxisSize.max,
+                               mainAxisAlignment: MainAxisAlignment.start,
+                               children: <Widget>[
+                                 Container(
+                                   width: width/1.4,
+                                   child: Text('${cafes[index]['table_menu_list'][cafes.length]['category_dishes'][index]['dish_name']}',style: TextStyle(fontWeight: FontWeight.bold),),
 
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Container(child: Text("SAR 7.25")),
-                            Padding(
-                              padding: EdgeInsets.only(top: 8,left: width/2.6),
-                              child: Container(child: Text('15 calories')),
-                            ),
-                          ],
-                        ),
+                                 ),
+                                 Row(
+                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                   children: <Widget>[
+                                     Padding(
+                                       padding: const EdgeInsets.only(top: 8,right: 5),
+                                       child: Container(child: Text('${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_currency']}',style: TextStyle(fontWeight: FontWeight.bold)),),
+                                     ),
+                                     Padding(
+                                       padding: const EdgeInsets.only(top: 8),
+                                       child: Container(child: Text('${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_price']}',style: TextStyle(fontWeight: FontWeight.bold)),),
+                                     ),
+                                     Padding(
+                                       padding: EdgeInsets.only(top: 8,left: width/3),
+                                       child: Container(child: Text('${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_calories']}'+' Calories',style: TextStyle(fontWeight: FontWeight.w400,fontSize: width/32)),),
+                                     ),
+                                   ],
+                                 ),
 
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10,bottom: 10),
-                          child: Container(
-                            width: width/1.4,
-                              child: Text("jhjhfkjhf jhjhjh ljyhgjglkjhg gjhgjhg kjh jksdhfkgjh dkf  dkjfhgkjh dfjghkdjfhg dfjhgkjdfhg",style: TextStyle(color: Colors.black38), textAlign: TextAlign.left)),
-                        )
+                                 Padding(
+                                   padding: const EdgeInsets.only(top: 10,bottom: 10),
+                                   child: Container(
+                                       width: width/1.4,
+                                       child: Text('${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_description']}',style: TextStyle(color: Colors.black38), textAlign: TextAlign.left),
+                                   ),
+                                 )
 
-                      ],
-                    ),
-                    Container(
-                      child: Image.network(
-                        'http://restaurants.unicomerp.net//images/Restaurant/1010000001/Item/Items/100000001.jpg',
-                        scale: 11,
-                      ),
-                    )
-                  ],
-                ),
+                               ],
+                             ),
+                             Container(
+                               child: Image.network(
+                                 '${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_image']}',
+                                 scale: 11,
+                               ),
+                             )
+                           ],
+                         ),
 
-                Row(
-                  children: <Widget>[
-                    Container(
-                      width: width/10,
-                      height: width/10,
-                      decoration: new BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: new BorderRadius.only(
-                            topLeft: const Radius.circular(40.0),
+                         Row(
+                           children: <Widget>[
+                             Container(
+                                 width: width/10,
+                                 height: width/10,
+                                 decoration: new BoxDecoration(
+                                     color: Colors.green,
+                                     borderRadius: new BorderRadius.only(
+                                       topLeft: const Radius.circular(40.0),
 
-                            bottomLeft: const Radius.circular(40.0),
+                                       bottomLeft: const Radius.circular(40.0),
 
 
-                          )),
-                      child: IconButton(icon: Icon(Icons.remove, color: Colors.white,),onPressed: ()=>setState((){_foodCount>0 ? _foodCount--: _foodCount = 0; _itemCount -= _foodCount;}))
-                    ),
-                    Container(
-                      width: width/5,
-                      height: width/10,
-                      decoration: new BoxDecoration(
-                        color: Colors.green,
-                      ),
-                      child: Center(
-                        child: Text(_foodCount.toString(),style: TextStyle(color: Colors.white, fontSize: width/25),),
+                                     )),
+                                 child: IconButton(icon: Icon(Icons.remove, color: Colors.white,),onPressed: ()=>setState((){_foodCount>0 ? _foodCount--: _foodCount = 0; _itemCount -= _foodCount;}))
+                             ),
+                             Container(
+                               width: width/5,
+                               height: width/10,
+                               decoration: new BoxDecoration(
+                                 color: Colors.green,
+                               ),
+                               child: Center(
+                                 child: Text(_foodCount.toString(),style: TextStyle(color: Colors.white, fontSize: width/25),),
 
-                      ),
-                    ),
-                    Container(
-                      width: width/10,
-                      height: width/10,
-                      decoration: new BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: new BorderRadius.only(
+                               ),
+                             ),
+                             Container(
+                               width: width/10,
+                               height: width/10,
+                               decoration: new BoxDecoration(
+                                   color: Colors.green,
+                                   borderRadius: new BorderRadius.only(
 
-                            topRight: const Radius.circular(40.0),
+                                     topRight: const Radius.circular(40.0),
 
-                            bottomRight: const Radius.circular(40.0),
+                                     bottomRight: const Radius.circular(40.0),
 
-                          )),
-                      child:  IconButton(icon: Icon(Icons.add, color: Colors.white,),onPressed: ()=>setState((){_foodCount++; _itemCount = _foodCount;})),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: height/70),
-                  child: Container(
-                      alignment: Alignment(-1.0, -1.0),
-                      child: Text('Customization Available',style: TextStyle(color: Colors.red),)
-                  ),
-                ),
+                                   )),
+                               child:  IconButton(icon: Icon(Icons.add, color: Colors.white,),onPressed: ()=>setState((){_foodCount++; _itemCount += _foodCount;})),
+                             ),
+                           ],
+                         ),
+                         Padding(
+                           padding: EdgeInsets.only(top: height/70),
+                           child: Container(
+                               alignment: Alignment(-1.0, -1.0),
+                               child: Text('Customization Available',style: TextStyle(color: Colors.red),)
+                           ),
+                         ),
 
-              ],
-            ),
-            padding: const EdgeInsets.all(20),
-          )
-        ],
-      ),
-    );
+                       ],
+                     ),
+                     padding: const EdgeInsets.all(20),
+                   )
+                 ],
+               ),
+             );
+//               Column(
+//               children: <Widget>[
+//                   Text('${cafes[index]['table_menu_list'][index]['category_dishes'][index]['dish_name']}'),
+//                  // Text('Age: ${employees[index]['restaurant_id']}'),
+//               ],
+//             );
+           },
+
+         );
+       }
+
+       return Center(
+         child: CircularProgressIndicator(),
+       );
+     },
+   );
   }
+
 }
+
+
+
+//ListView.builder(
+//itemCount: 2,
+////data == null ? 0 : data.length,
+//itemBuilder: (BuildContext context, int index){
+//return Card(
+//child: Column(
+//children: <Widget>[
+//Container(
+//child:
+////Text(data[index]['restaurant_name'],style: TextStyle(fontSize: 20),),
+//Column(
+//children: <Widget>[
+//Row(
+//mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//children: <Widget>[
+//Column(
+//crossAxisAlignment: CrossAxisAlignment.start,
+//mainAxisSize: MainAxisSize.max,
+//mainAxisAlignment: MainAxisAlignment.start,
+//children: <Widget>[
+//Container(
+//width: width/1.4,
+//child: Text("ikuygyhg"),
+//
+//),
+//Row(
+//mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//children: <Widget>[
+//Container(child: Text("SAR 7.25")),
+//Padding(
+//padding: EdgeInsets.only(top: 8,left: width/2.6),
+//child: Container(child: Text('15 calories')),
+//),
+//],
+//),
+//
+//Padding(
+//padding: const EdgeInsets.only(top: 10,bottom: 10),
+//child: Container(
+//width: width/1.4,
+//child: Text("jhjhfkjhf jhjhjh ljyhgjglkjhg gjhgjhg kjh jksdhfkgjh dkf  dkjfhgkjh dfjghkdjfhg dfjhgkjdfhg",style: TextStyle(color: Colors.black38), textAlign: TextAlign.left)),
+//)
+//
+//],
+//),
+//Container(
+//child: Image.network(
+//'http://restaurants.unicomerp.net//images/Restaurant/1010000001/Item/Items/100000001.jpg',
+//scale: 11,
+//),
+//)
+//],
+//),
+//
+//Row(
+//children: <Widget>[
+//Container(
+//width: width/10,
+//height: width/10,
+//decoration: new BoxDecoration(
+//color: Colors.green,
+//borderRadius: new BorderRadius.only(
+//topLeft: const Radius.circular(40.0),
+//
+//bottomLeft: const Radius.circular(40.0),
+//
+//
+//)),
+//child: IconButton(icon: Icon(Icons.remove, color: Colors.white,),onPressed: ()=>setState((){_foodCount>0 ? _foodCount--: _foodCount = 0; _itemCount -= _foodCount;}))
+//),
+//Container(
+//width: width/5,
+//height: width/10,
+//decoration: new BoxDecoration(
+//color: Colors.green,
+//),
+//child: Center(
+//child: Text(_foodCount.toString(),style: TextStyle(color: Colors.white, fontSize: width/25),),
+//
+//),
+//),
+//Container(
+//width: width/10,
+//height: width/10,
+//decoration: new BoxDecoration(
+//color: Colors.green,
+//borderRadius: new BorderRadius.only(
+//
+//topRight: const Radius.circular(40.0),
+//
+//bottomRight: const Radius.circular(40.0),
+//
+//)),
+//child:  IconButton(icon: Icon(Icons.add, color: Colors.white,),onPressed: ()=>setState((){_foodCount++; _itemCount = _foodCount;})),
+//),
+//],
+//),
+//Padding(
+//padding: EdgeInsets.only(top: height/70),
+//child: Container(
+//alignment: Alignment(-1.0, -1.0),
+//child: Text('Customization Available',style: TextStyle(color: Colors.red),)
+//),
+//),
+//
+//],
+//),
+//padding: const EdgeInsets.all(20),
+//)
+//],
+//),
+//);
+//});
 
 
 
